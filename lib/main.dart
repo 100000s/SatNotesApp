@@ -560,6 +560,9 @@ class _HomeScreenState extends State<HomeScreen> {
   bool shoppingOnlineMode = false;
   String shoppingSelectionLabel = '';
   String shoppingSelectionDetails = '';
+  String shoppingSelectionCategory = '';
+  String shoppingSelectionSubcategory = '';
+  String shoppingSelectionItem = '';
 
   List<String> get actions => [
         AppLocalizations.getString('shopping', language),
@@ -607,7 +610,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _loadSavedLanguage();
+    // _loadSavedLanguage();
     _updateMarkers();
   }
 
@@ -659,8 +662,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       shoppingOnlineMode = selection.isOnlineMode || selection.isDigitalOnly;
-      shoppingSelectionLabel = selection.category;
-      shoppingSelectionDetails = '${selection.subcategory} • ${selection.item}';
+      shoppingSelectionCategory = selection.category;
+      shoppingSelectionSubcategory = selection.subcategory;
+      shoppingSelectionItem = selection.item;
+      shoppingSelectionLabel =
+          localizeShoppingText(selection.category, language);
+      shoppingSelectionDetails =
+          '${localizeShoppingText(selection.subcategory, language)} • ${localizeShoppingText(selection.item, language)}';
 
       if (shoppingOnlineMode) {
         activeFilters = {};
@@ -689,10 +697,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _toggleLanguage() async {
     final newLanguage = language == 'en' ? 'es' : 'en';
-    await storage.write(key: 'preferredLanguage', value: newLanguage);
+    // await storage.write(key: 'preferredLanguage', value: newLanguage);
     setState(() {
       language = newLanguage;
       showLanguageButton = false;
+      if (shoppingSelectionCategory.isNotEmpty) {
+        shoppingSelectionLabel =
+            localizeShoppingText(shoppingSelectionCategory, language);
+        shoppingSelectionDetails =
+            '${localizeShoppingText(shoppingSelectionSubcategory, language)} • ${localizeShoppingText(shoppingSelectionItem, language)}';
+      }
     });
     _updateMarkers();
   }
